@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "首頁";
+}
+@using Newtonsoft.Json;
+
+<div id="houses" class="container pt-5"></div>
+
+<script>
+	var houses = @Html.Raw(JsonConvert.SerializeObject(Model));
+	//console.log(houses)
+
+  $.each(houses, function(index, item) {
+		$('#houses').append(`
+				<div class="row align-items-center mb-4">
+			<div class="col-sm-3">
+				<img src="./img/${item.Img}" alt="" style="width: 180px" />
+			</div>
+			<div class="col-sm-7">
+				<div class="mb-2">
+					<label for="price" class="text-danger h5">${item.Price}元/月</label>
+					<label for="deposit" class="text-secondary">押金${item.DepMon}個月</label>
+				</div>
+				<div class="d-flex">
+					<div class="col-sm">
+						<p>地點</p>
+						<p class="font-weight-bold">${item.Location}</p>
+					</div>
+					<div class="col-sm">
+						<p>樓層</p>
+						<p class="font-weight-bold">${item.Floor}</p>
+					</div>
+					<div class="col-sm">
+						<p>坪數</p>
+						<p class="font-weight-bold">${item.Size}坪</p>
+					</div>
+					<div class="col-sm">
+						<p>剩餘房數/總房數</p>
+						<p class="font-weight-bold">
+							<span class="text-warning h5">${item.Empty}</span>
+							/ <span>${item.Rooms}</span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-2">
+				<button class="btn btn-success">預約看房</button>
+			</div>
+		</div>
+		`)
+	})
+</script>
