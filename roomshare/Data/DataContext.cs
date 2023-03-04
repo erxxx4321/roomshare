@@ -16,12 +16,11 @@ namespace roomshare.Data
 		}
 
 		public DbSet<House> Houses { get; set; }
+		public DbSet<Reserve> Reserves { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			var builder = new ConfigurationBuilder();
-			optionsBuilder
-				.UseSqlite("Data Source=sqlite.db");
+			optionsBuilder.UseSqlite("Data Source=sqlite.db");
 		}
 		public void ConfigureServices(IServiceCollection services, WebApplicationBuilder builder)
 		{

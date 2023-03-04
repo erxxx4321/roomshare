@@ -6,46 +6,127 @@
 <div id="houses" class="container pt-5"></div>
 
 <script>
+
+</script>
+
+<script>
 	var houses = @Html.Raw(JsonConvert.SerializeObject(Model));
-	//console.log(houses)
 
   $.each(houses, function(index, item) {
 		$('#houses').append(`
-				<div class="row align-items-center mb-4">
-			<div class="col-sm-3">
-				<img src="./img/${item.Img}" alt="" style="width: 180px" />
-			</div>
-			<div class="col-sm-7">
-				<div class="mb-2">
-					<label for="price" class="text-danger h5">${item.Price}元/月</label>
-					<label for="deposit" class="text-secondary">押金${item.DepMon}個月</label>
-				</div>
-				<div class="d-flex">
-					<div class="col-sm">
-						<p>地點</p>
-						<p class="font-weight-bold">${item.Location}</p>
+				<div class="row align-items-center">
+					<div class="col-sm-3">
+						<img src="./img/${item.Img}" alt="" style="width: 180px" />
 					</div>
-					<div class="col-sm">
-						<p>樓層</p>
-						<p class="font-weight-bold">${item.Floor}</p>
+					<div class="col-md-7">
+						<div class="mb-2">
+							<label for="price" class="text-danger h5">${item.Price}元/月</label>
+							<label for="deposit" class="text-secondary">押金${item.DepMon}個月</label>
+						</div>
+						<div class="row">
+							<div class="col-md">
+								<p>地點</p>
+								<p class="font-weight-bold">${item.Location}</p>
+							</div>
+							<div class="col-md">
+								<p>樓層</p>
+								<p class="font-weight-bold">${item.Floor}</p>
+							</div>
+							<div class="col-md">
+								<p>坪數</p>
+								<p class="font-weight-bold">${item.Size}坪</p>
+							</div>
+							<div class="col-md">
+								<p>剩餘房數/總房數</p>
+								<p class="font-weight-bold">
+									<span class="text-warning h5">${item.Empty}</span>
+									/ <span>${item.Rooms}</span>
+								</p>
+							</div>
+						</div>
 					</div>
-					<div class="col-sm">
-						<p>坪數</p>
-						<p class="font-weight-bold">${item.Size}坪</p>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">預約看房</button>
+						<div class="modal fade" id="modal-success" aria-modal="true" role="dialog">
+								<div class="modal-dialog">
+									<div class="modal-content bg-success">
+										<div class="modal-header">
+											<h4 class="modal-title">填寫預約資訊</h4>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<div class="form-group">
+												<label>幾月幾號幾點</label>
+												<div class="input-group date" id="reservationdatetime" data-target-input="nearest">
+													<input
+														type="text"
+														id="reserve_time"
+														class="form-control datetimepicker-input"
+														data-target="#reservationdatetime"
+													/>
+													<div class="input-group-append" data-target="#reservationdatetime" data-toggle="datetimepicker">
+														<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label for="reserve_name">姓名</label>
+												<input type="text" name="" id="reserve_name" class="form-control" />
+											</div>
+											<div class="form-group">
+												<label for="reserve_tel">手機</label>
+												<input type="text" name="" id="reserve_tel" class="form-control" />
+											</div>
+											<div class="form-group">
+												<label for="reserve_mail">信箱</label>
+												<input type="text" name="" id="reserve_mail" class="form-control" />
+											</div>
+										</div>
+										<div class="modal-footer justify-content-between">
+											<button type="button" class="btn btn-outline-light" data-dismiss="modal">取消</button>
+											<button type="submit" id="sendBtn" class="btn btn-outline-light">送出</button>
+										</div>
+									</div>
+								</div>
+						</div>
 					</div>
-					<div class="col-sm">
-						<p>剩餘房數/總房數</p>
-						<p class="font-weight-bold">
-							<span class="text-warning h5">${item.Empty}</span>
-							/ <span>${item.Rooms}</span>
-						</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-2">
-				<button class="btn btn-success">預約看房</button>
-			</div>
-		</div>
-		`)
+				</div>	
+		`)	
+
+		$('#sendBtn').click(function(){
+				let data = {
+					HouseId: index,
+					Name: $('#reserve_name').val(),		
+					Email: $('#reserve_mail').val(),
+					Time: $('#reserve_time').val(),
+					Tel: $('#reserve_tel').val()
+				}
+
+				$.ajax({
+						url: "/Home/SaveReserve",
+						type: "POST",
+						data: data,
+						success: function(res) {
+							 console.log(res)
+						},
+						error: function(request, status, error) {
+								console.log(request.responseText);
+						}
+				});
+					$('#reserve_name').val('');
+					$('#reserve_mail').val('');
+					$('#reserve_time').val('');
+					$('#reserve_tel').val('');
+					$('#modal-success').modal('toggle');
+			})
 	})
+
+	$(function () {
+			$('input[id="reserve_time"]').daterangepicker({
+					singleDatePicker: true,
+					timePicker: true,
+			});
+	});
 </script>
